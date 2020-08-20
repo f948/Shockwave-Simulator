@@ -1,0 +1,144 @@
+<html> 
+	<html>
+	<head>
+		<style>
+			canvas{
+				   border  : 1px solid black;
+				  }
+		</style>
+	  <canvas id="canvas" width="1000" height = "621"></canvas>
+	  <br>
+	  Choose color
+	  <input type="color" id = "color" value="#000000">
+	  Choose line width
+	  <input type="number" id = "line width" value="1">
+	  Choose speed
+	  <input type="number" id = "speed" value="5">
+	  <input type="button" value="Apply Changes" onclick="applyChanges()">
+	</head>
+	<body>
+		<script>
+		
+			// global variables 
+			var shockwave = null;
+			var shockwaves = new Array();
+			var i;
+			var width=1,speed=5;
+			
+			// global constants 
+			const canvas  = document.getElementById("canvas");
+			const context = canvas.getContext('2d');
+			const rect = canvas.getBoundingClientRect();
+			const colorPicker = document.getElementById("color");
+			const lineWidthPicker = document.getElementById("line width");
+			const speedPicker = document.getElementById("speed");
+			
+			// class that creates shockwaves 
+			
+			class ShockWave{
+			
+				constructor(centerX,centerY,radius){
+					
+					this._centerX=centerX;
+					this._centerY=centerY;
+					this._radius=radius;
+				
+				}
+				
+				set centerX(newCenterX){
+				
+					this._centerX= newCenterX;
+				
+				}
+				
+				get centerX(){
+				
+					return this._centerX;
+				
+				}
+				
+				set centerY(newCenterY){
+				
+					this._centerY= newCenterY;
+				
+				}
+				
+				get centerY(){
+				
+					return this._centerY;
+				
+				}
+				
+				set radius(newRadius){
+				
+					this._radius = newRadius;
+				
+				}
+				
+				get radius(){
+				
+					return this._radius;
+				
+				}
+			
+			
+			}
+			
+			function applyChanges(){
+		
+			
+				if(!isNaN(lineWidthPicker.value)){
+					
+					width=Number(lineWidthPicker.value);
+				
+				}
+			
+				if(!isNaN(speedPicker.value)){
+					
+					speed=Number(speedPicker.value);
+				
+				}
+			
+			}
+			
+			canvas.addEventListener("mousedown",function(event){
+				
+				// create a new shockwave 
+				shockwave = new ShockWave(event.clientX-rect.left,event.clientY-rect.top,0);
+				shockwaves.push(shockwave);
+				
+			});
+			
+			function updateShockwaves(){
+				
+				context.clearRect(0,0,canvas.width,canvas.height);
+				
+				context.strokeStyle=colorPicker.value;
+				context.lineWidth = width;
+				
+				// update each shockwave and redraw it 
+				for(i=0;i<=shockwaves.length-1;i++){
+					
+					context.beginPath();
+					context.arc(shockwaves[i].centerX,shockwaves[i].centerY,shockwaves[i].radius,0,2*Math.PI);
+					context.stroke();
+					shockwaves[i].radius+=speed;
+					
+					if(shockwaves[i].centerX - shockwaves[i].radius <-100 && shockwaves[i].centerX + shockwaves[i].radius >1000 && shockwaves[i].centerY - shockwaves[i].radius <-100 && shockwaves[i].centerY + shockwaves[i].radius >621){
+						
+						delete shockwaves[i].centerX;
+						delete shockwaves[i].centerY;
+						delete shockwaves[i].radius;
+					}
+				}
+				
+				
+			}
+			
+			setInterval(updateShockwaves,10);
+			
+			
+			
+		</script>
+	</body>
+</html>
